@@ -10,23 +10,31 @@ import SwiftData
 
 @main
 struct RickAndMortyApp: App {
-    var sharedModelContainer: ModelContainer = {
-        let schema = Schema([
-            Item.self,
-        ])
-        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
-
+    let container: ModelContainer
+    
+    init() {
+        print("Initializing app...")
         do {
-            return try ModelContainer(for: schema, configurations: [modelConfiguration])
+            let schema = Schema([
+                Episode.self,
+                AppSettings.self
+            ])
+            let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
+            print("Creating ModelContainer with schema...")
+            container = try ModelContainer(for: schema, configurations: [modelConfiguration])
+            print("ModelContainer created successfully")
         } catch {
-            fatalError("Could not create ModelContainer: \(error)")
+            print("Failed to initialize ModelContainer: \(error)")
+            fatalError("Failed to initialize ModelContainer: \(error)")
         }
-    }()
-
+    }
+    
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            NavigationStack {
+                EpisodeListView()
+            }
         }
-        .modelContainer(sharedModelContainer)
+        .modelContainer(container)
     }
 }
